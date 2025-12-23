@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Sunbay.Nexus.Sdk.Models.Enums
+namespace Sunbay.Nexus.Sdk.Enums
 {
     /// <summary>
     /// Payment category enum
@@ -38,3 +38,4 @@ namespace Sunbay.Nexus.Sdk.Models.Enums
         QrCpm
     }
 }
+

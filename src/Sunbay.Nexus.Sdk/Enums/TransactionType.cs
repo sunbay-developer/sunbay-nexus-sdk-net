@@ -1,4 +1,4 @@
-namespace Sunbay.Nexus.Sdk.Models.Enums
+namespace Sunbay.Nexus.Sdk.Enums
 {
     /// <summary>
     /// Transaction type enum
@@ -41,3 +41,4 @@ namespace Sunbay.Nexus.Sdk.Models.Enums
         Void
     }
 }
+

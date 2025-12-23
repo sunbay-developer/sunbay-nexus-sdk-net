@@ -1,4 +1,4 @@
-namespace Sunbay.Nexus.Sdk.Models.Enums
+namespace Sunbay.Nexus.Sdk.Enums
 {
     /// <summary>
     /// Authentication method enum
@@ -31,3 +31,4 @@ namespace Sunbay.Nexus.Sdk.Models.Enums
         Signature
     }
 }
+
