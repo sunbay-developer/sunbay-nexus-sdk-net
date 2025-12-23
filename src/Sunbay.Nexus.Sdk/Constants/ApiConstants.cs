@@ -29,7 +29,7 @@ namespace Sunbay.Nexus.Sdk.Constants
         public const string PATH_BATCH_CLOSE = SEMI_INTEGRATION_PREFIX + "/settlement/batch-close";
         
         // Error Codes
-        public const string ERROR_CODE_PARAMETER_ERROR = "PARAMETER_ERROR";
+        public const string ERROR_CODE_PARAMETER_ERROR = "C17";
         public const string ERROR_CODE_NETWORK_ERROR = "NETWORK_ERROR";
         public const string ERROR_CODE_TIMEOUT = "TIMEOUT";
         public const string ERROR_CODE_SERVER_ERROR = "SERVER_ERROR";
@@ -77,5 +77,18 @@ namespace Sunbay.Nexus.Sdk.Constants
         
         // Getter Method Name Prefix Length
         public const int GETTER_METHOD_PREFIX_LENGTH = 3;
+        
+        // HTTP Header Names
+        public const string HEADER_AUTHORIZATION = "Authorization";
+        public const string HEADER_CONTENT_TYPE = "Content-Type";
+        public const string HEADER_REQUEST_ID = "X-Client-Request-Id";
+        public const string HEADER_TIMESTAMP = "X-Timestamp";
+        
+        // Content Types
+        public const string CONTENT_TYPE_JSON = "application/json";
+        
+        // User Agent
+        public const string USER_AGENT_PREFIX = "Sunbay-Nexus-SDK-DotNet/";
+        public const string USER_AGENT_VERSION = "1.0.0";
     }
 }

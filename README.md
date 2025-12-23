@@ -113,6 +113,22 @@ class Program
 }
 ```
 
+## Available API Methods
+
+The SDK provides the following transaction methods:
+
+- `SaleAsync` - Execute a sale transaction
+- `AuthAsync` - Authorization (pre-auth)
+- `ForcedAuthAsync` - Forced authorization
+- `IncrementalAuthAsync` - Incremental authorization
+- `PostAuthAsync` - Post authorization
+- `RefundAsync` - Refund transaction
+- `VoidAsync` - Void transaction
+- `AbortAsync` - Abort transaction
+- `TipAdjustAsync` - Adjust tip amount
+- `QueryAsync` - Query transaction status
+- `BatchCloseAsync` - Batch close settlement
+
 ## Configuration Options
 
 ```csharp
@@ -173,8 +189,9 @@ Business logic errors (parameter validation, API business errors, etc.)
 ## Requirements
 
 - .NET Standard 2.0+ / .NET 6.0+ / .NET 8.0+
-- System.Text.Json 8.0.0+
+- System.Text.Json 8.0.0+ (for .NET Standard 2.0)
 - Microsoft.Extensions.Http 8.0.0+
+- (The SDK itself references `Microsoft.Extensions.Logging.Abstractions`, but this is a transitive dependency of the NuGet package; you don't need to install it manually.)
 
 ## Support
 
