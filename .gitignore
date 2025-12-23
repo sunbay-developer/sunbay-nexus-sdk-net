@@ -54,10 +54,12 @@ TestResults/
 *.coveragexml
 
 # Test Resources (don't upload to git)
-tests/**/TestData/
-tests/**/Resources/
+tests/
 **/appsettings.Development.json
 **/appsettings.Local.json
+
+# Design documents (internal use only)
+sunbay-nexus-sdk-dotnet-design.md
 
 # macOS
 .DS_Store
