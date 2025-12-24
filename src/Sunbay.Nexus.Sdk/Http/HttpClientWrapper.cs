@@ -56,7 +56,7 @@ namespace Sunbay.Nexus.Sdk.Http
             
             // Set default headers
             _httpClient.DefaultRequestHeaders.Add(ApiConstants.HEADER_AUTHORIZATION, $"{ApiConstants.AUTHORIZATION_BEARER_PREFIX}{options.ApiKey}");
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", $"{ApiConstants.USER_AGENT_PREFIX}{ApiConstants.USER_AGENT_VERSION}");
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgentHelper.UserAgent);
             
             // JSON serialization options
             _jsonOptions = new JsonSerializerOptions
@@ -203,13 +203,14 @@ namespace Sunbay.Nexus.Sdk.Http
             // Log request
             if (_logger?.IsEnabled(LogLevel.Information) == true)
             {
+                var headers = FormatRequestHeaders(request);
                 if (!string.IsNullOrEmpty(requestBody))
                 {
-                    _logger.LogInformation("Request {Method} {Url} - Body: {Body}", requestMethod, requestUrl, requestBody);
+                    _logger.LogInformation("Request {Method} {Url} - Headers: {Headers}, Body: {Body}", requestMethod, requestUrl, headers, requestBody);
                 }
                 else
                 {
-                    _logger.LogInformation("Request {Method} {Url}", requestMethod, requestUrl);
+                    _logger.LogInformation("Request {Method} {Url} - Headers: {Headers}", requestMethod, requestUrl, headers);
                 }
             }
             
@@ -443,6 +444,67 @@ namespace Sunbay.Nexus.Sdk.Http
                     await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
                 }
             }
+        }
+        
+        /// <summary>
+        /// Format request headers for logging, with sensitive information masked
+        /// </summary>
+        private string FormatRequestHeaders(HttpRequestMessage request)
+        {
+            var headers = new List<string>();
+            var processedHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            
+            // Add default headers from HttpClient (Authorization, User-Agent, etc.)
+            foreach (var header in _httpClient.DefaultRequestHeaders)
+            {
+                var headerName = header.Key;
+                var headerValues = string.Join(", ", header.Value);
+                processedHeaders.Add(headerName);
+                
+                // Mask Authorization header
+                if (string.Equals(headerName, ApiConstants.HEADER_AUTHORIZATION, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Format: "Authorization: Bearer ***" or "Authorization: ***"
+                    if (headerValues.StartsWith(ApiConstants.AUTHORIZATION_BEARER_PREFIX, StringComparison.OrdinalIgnoreCase))
+                    {
+                        headers.Add($"{headerName}: {ApiConstants.AUTHORIZATION_BEARER_PREFIX}***");
+                    }
+                    else
+                    {
+                        headers.Add($"{headerName}: ***");
+                    }
+                }
+                else
+                {
+                    headers.Add($"{headerName}: {headerValues}");
+                }
+            }
+            
+            // Add request-specific headers (skip if already in default headers)
+            foreach (var header in request.Headers)
+            {
+                var headerName = header.Key;
+                if (processedHeaders.Contains(headerName))
+                {
+                    continue; // Skip if already added from default headers
+                }
+                
+                var headerValues = string.Join(", ", header.Value);
+                headers.Add($"{headerName}: {headerValues}");
+            }
+            
+            // Add content headers if exists
+            if (request.Content != null)
+            {
+                foreach (var header in request.Content.Headers)
+                {
+                    var headerName = header.Key;
+                    var headerValues = string.Join(", ", header.Value);
+                    headers.Add($"{headerName}: {headerValues}");
+                }
+            }
+            
+            return string.Join("; ", headers);
         }
         
         /// <summary>

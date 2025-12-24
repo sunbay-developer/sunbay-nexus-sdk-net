@@ -86,9 +86,5 @@ namespace Sunbay.Nexus.Sdk.Constants
         
         // Content Types
         public const string CONTENT_TYPE_JSON = "application/json";
-        
-        // User Agent
-        public const string USER_AGENT_PREFIX = "Sunbay-Nexus-SDK-DotNet/";
-        public const string USER_AGENT_VERSION = "1.0.0";
     }
 }
