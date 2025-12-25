@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Sunbay.Nexus.Sdk.Enums;
 using Sunbay.Nexus.Sdk.Models.Common;
 
 namespace Sunbay.Nexus.Sdk.Models.Responses
@@ -30,13 +31,13 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         /// Transaction status
         /// </summary>
         [JsonPropertyName("transactionStatus")]
-        public string? TransactionStatus { get; set; }
+        public TransactionStatus? TransactionStatus { get; set; }
         
         /// <summary>
         /// Transaction type
         /// </summary>
         [JsonPropertyName("transactionType")]
-        public string? TransactionType { get; set; }
+        public TransactionType? TransactionType { get; set; }
         
         /// <summary>
         /// Transaction amount details
@@ -66,7 +67,7 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         /// Card network type
         /// </summary>
         [JsonPropertyName("cardNetworkType")]
-        public string? CardNetworkType { get; set; }
+        public CardNetworkType? CardNetworkType { get; set; }
         
         /// <summary>
         /// Payment method ID
@@ -114,13 +115,13 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         /// Entry mode
         /// </summary>
         [JsonPropertyName("entryMode")]
-        public string? EntryMode { get; set; }
+        public EntryMode? EntryMode { get; set; }
         
         /// <summary>
         /// Authentication method
         /// </summary>
         [JsonPropertyName("authenticationMethod")]
-        public string? AuthenticationMethod { get; set; }
+        public AuthenticationMethod? AuthenticationMethod { get; set; }
         
         /// <summary>
         /// Transaction result code

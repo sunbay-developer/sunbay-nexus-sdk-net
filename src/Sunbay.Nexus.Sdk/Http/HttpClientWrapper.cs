@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -64,7 +65,8 @@ namespace Sunbay.Nexus.Sdk.Http
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = false
+                WriteIndented = false,
+                Converters = { new EnumMemberJsonConverterFactory() }
             };
         }
 
@@ -243,20 +245,11 @@ namespace Sunbay.Nexus.Sdk.Http
                     }
                     
                     // Parse response with data field support
-                    var result = ParseResponse<TResponse>(responseBody);
+                    // If code != "0", ParseResponse will throw SunbayBusinessException
+                    var result = ParseResponse<TResponse>(responseBody, requestMethod, requestUrl);
                     if (result == null)
                     {
                         throw new SunbayNetworkException(ApiConstants.MESSAGE_FAILED_PARSE_RESPONSE, false);
-                    }
-                    
-                    if (!result.Success)
-                    {
-                        if (_logger?.IsEnabled(LogLevel.Error) == true)
-                        {
-                            _logger.LogError("API error {Method} {Url} - code: {Code}, msg: {Message}, traceId: {TraceId}",
-                                requestMethod, requestUrl, result.Code, result.Message, result.TraceId);
-                        }
-                        throw new SunbayBusinessException(result.Code, result.Message, result.TraceId);
                     }
                     
                     return result;
@@ -294,8 +287,9 @@ namespace Sunbay.Nexus.Sdk.Http
         /// Parse response with data field support
         /// API returns: {"code":"0","msg":"Success","data":{...},"traceId":"..."}
         /// Need to extract data field and merge with base response
+        /// If code != "0", throws SunbayBusinessException
         /// </summary>
-        private TResponse? ParseResponse<TResponse>(string responseBody)
+        private TResponse? ParseResponse<TResponse>(string responseBody, string requestMethod, string requestUrl)
             where TResponse : BaseResponse
         {
             try
@@ -313,6 +307,17 @@ namespace Sunbay.Nexus.Sdk.Http
                 var traceId = root.TryGetProperty(ApiConstants.JSON_FIELD_TRACE_ID, out var traceIdElement) 
                     ? traceIdElement.GetString() 
                     : null;
+                
+                // Check if code != "0", throw exception immediately
+                if (code != ApiConstants.RESPONSE_SUCCESS_CODE)
+                {
+                    if (_logger?.IsEnabled(LogLevel.Error) == true)
+                    {
+                        _logger.LogError("API error {Method} {Url} - code: {Code}, msg: {Message}, traceId: {TraceId}",
+                            requestMethod, requestUrl, code ?? "null", msg ?? "null", traceId ?? "null");
+                    }
+                    throw new SunbayBusinessException(code ?? ApiConstants.ERROR_CODE_INVALID_RESPONSE, msg ?? "Unknown error", traceId);
+                }
                 
                 // Extract data field if exists
                 TResponse? result;
@@ -348,13 +353,33 @@ namespace Sunbay.Nexus.Sdk.Http
                 
                 return result;
             }
+            catch (SunbayBusinessException)
+            {
+                // Re-throw business exceptions
+                throw;
+            }
             catch (Exception ex)
             {
                 // Fallback to direct parsing
                 _logger?.LogWarning(ex, "Failed to parse response with data field extraction, fallback to direct parsing");
                 try
                 {
-                    return JsonSerializer.Deserialize<TResponse>(responseBody, _jsonOptions);
+                    var result = JsonSerializer.Deserialize<TResponse>(responseBody, _jsonOptions);
+                    // Check code after fallback parsing
+                    if (result != null && result.Code != ApiConstants.RESPONSE_SUCCESS_CODE)
+                    {
+                        if (_logger?.IsEnabled(LogLevel.Error) == true)
+                        {
+                            _logger.LogError("API error {Method} {Url} - code: {Code}, msg: {Message}, traceId: {TraceId}",
+                                requestMethod, requestUrl, result.Code, result.Message, result.TraceId ?? "null");
+                        }
+                        throw new SunbayBusinessException(result.Code, result.Message, result.TraceId);
+                    }
+                    return result;
+                }
+                catch (SunbayBusinessException)
+                {
+                    throw;
                 }
                 catch (JsonException jsonEx)
                 {
