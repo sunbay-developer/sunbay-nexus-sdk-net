@@ -5,7 +5,7 @@ namespace Sunbay.Nexus.Sdk.Models.Common
 {
     /// <summary>
     /// Amount information
-    /// Note: API returns amounts as strings, so we use string properties with helper methods to parse
+    /// All amounts are in the smallest currency unit (e.g., cents for USD, fen for CNY)
     /// </summary>
     public class Amount
     {
@@ -16,108 +16,45 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         public string? PriceCurrency { get; set; }
         
         /// <summary>
-        /// Transaction amount (as string from API)
+        /// Transaction amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("transAmount")]
-        public string? TransAmount { get; set; }
+        public long? TransAmount { get; set; }
         
         /// <summary>
-        /// Order amount (as string from API)
+        /// Order amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("orderAmount")]
-        public string? OrderAmount { get; set; }
+        public long? OrderAmount { get; set; }
         
         /// <summary>
-        /// Tax amount (as string from API)
+        /// Tax amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("taxAmount")]
-        public string? TaxAmount { get; set; }
+        public long? TaxAmount { get; set; }
         
         /// <summary>
-        /// Surcharge amount (as string from API)
+        /// Surcharge amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("surchargeAmount")]
-        public string? SurchargeAmount { get; set; }
+        public long? SurchargeAmount { get; set; }
         
         /// <summary>
-        /// Tip amount (as string from API)
+        /// Tip amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("tipAmount")]
-        public string? TipAmount { get; set; }
+        public long? TipAmount { get; set; }
         
         /// <summary>
-        /// Cashback amount (as string from API)
+        /// Cashback amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("cashbackAmount")]
-        public string? CashbackAmount { get; set; }
+        public long? CashbackAmount { get; set; }
         
         /// <summary>
         /// Pricing currency (ISO 4217)
         /// </summary>
         [JsonPropertyName("pricingCurrency")]
         public string? PricingCurrency { get; set; }
-        
-        /// <summary>
-        /// Get transaction amount as decimal
-        /// </summary>
-        public decimal? GetTransAmountAsDecimal()
-        {
-            return ParseDecimal(TransAmount);
-        }
-        
-        /// <summary>
-        /// Get order amount as decimal
-        /// </summary>
-        public decimal? GetOrderAmountAsDecimal()
-        {
-            return ParseDecimal(OrderAmount);
-        }
-        
-        /// <summary>
-        /// Get tax amount as decimal
-        /// </summary>
-        public decimal? GetTaxAmountAsDecimal()
-        {
-            return ParseDecimal(TaxAmount);
-        }
-        
-        /// <summary>
-        /// Get surcharge amount as decimal
-        /// </summary>
-        public decimal? GetSurchargeAmountAsDecimal()
-        {
-            return ParseDecimal(SurchargeAmount);
-        }
-        
-        /// <summary>
-        /// Get tip amount as decimal
-        /// </summary>
-        public decimal? GetTipAmountAsDecimal()
-        {
-            return ParseDecimal(TipAmount);
-        }
-        
-        /// <summary>
-        /// Get cashback amount as decimal
-        /// </summary>
-        public decimal? GetCashbackAmountAsDecimal()
-        {
-            return ParseDecimal(CashbackAmount);
-        }
-        
-        private static decimal? ParseDecimal(string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return null;
-            }
-            
-            if (decimal.TryParse(value, out var result))
-            {
-                return result;
-            }
-            
-            return null;
-        }
     }
 }

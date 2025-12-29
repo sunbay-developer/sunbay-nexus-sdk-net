@@ -4,6 +4,7 @@ namespace Sunbay.Nexus.Sdk.Models.Common
 {
     /// <summary>
     /// Batch total amount information
+    /// Amount is in the smallest currency unit (e.g., cents for USD, fen for CNY)
     /// </summary>
     public class BatchTotalAmount
     {
@@ -14,10 +15,10 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         public string? PriceCurrency { get; set; }
         
         /// <summary>
-        /// Total amount
+        /// Total amount in smallest currency unit
         /// </summary>
         [JsonPropertyName("amount")]
-        public decimal? Amount { get; set; }
+        public long? Amount { get; set; }
     }
 }
 

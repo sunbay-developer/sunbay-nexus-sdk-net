@@ -38,10 +38,10 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         public string? OriginalTransactionRequestId { get; set; }
         
         /// <summary>
-        /// New tip amount after adjustment, in basic currency unit
+        /// New tip amount after adjustment, in smallest currency unit (e.g., cents for USD, fen for CNY)
         /// </summary>
         [JsonPropertyName("tipAmount")]
-        public decimal TipAmount { get; set; }
+        public long TipAmount { get; set; }
         
         /// <summary>
         /// Additional data, returned as-is, recommended to use JSON format

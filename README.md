@@ -20,12 +20,12 @@ Install-Package Sunbay.Nexus.Sdk
 
 ### .NET CLI
 ```bash
-dotnet add package Sunbay.Nexus.Sdk --version 1.0.3
+dotnet add package Sunbay.Nexus.Sdk --version 1.0.4
 ```
 
 ### PackageReference
 ```xml
-<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.3" />
+<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.4" />
 ```
 
 ## Quick Start
@@ -72,7 +72,7 @@ class Program
                 TransactionRequestId = Guid.NewGuid().ToString("N"),
                 Amount = new SaleAmount
                 {
-                    OrderAmount = 100.00m,
+                    OrderAmount = 10000L, // 100.00 USD in cents (smallest currency unit)
                     PricingCurrency = "USD"
                 },
                 Description = "Product purchase",

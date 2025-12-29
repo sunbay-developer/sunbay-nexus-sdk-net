@@ -4,38 +4,39 @@ namespace Sunbay.Nexus.Sdk.Models.Common
 {
     /// <summary>
     /// Sale transaction amount information
+    /// All amounts are in the smallest currency unit (e.g., cents for USD, fen for CNY)
     /// </summary>
     public class SaleAmount
     {
         /// <summary>
-        /// Order amount (required)
+        /// Order amount in smallest currency unit (required)
         /// </summary>
         [JsonPropertyName("orderAmount")]
-        public decimal OrderAmount { get; set; }
+        public long OrderAmount { get; set; }
         
         /// <summary>
-        /// Tip amount (optional)
+        /// Tip amount in smallest currency unit (optional)
         /// </summary>
         [JsonPropertyName("tipAmount")]
-        public decimal? TipAmount { get; set; }
+        public long? TipAmount { get; set; }
         
         /// <summary>
-        /// Tax amount (optional)
+        /// Tax amount in smallest currency unit (optional)
         /// </summary>
         [JsonPropertyName("taxAmount")]
-        public decimal? TaxAmount { get; set; }
+        public long? TaxAmount { get; set; }
         
         /// <summary>
-        /// Surcharge amount (optional)
+        /// Surcharge amount in smallest currency unit (optional)
         /// </summary>
         [JsonPropertyName("surchargeAmount")]
-        public decimal? SurchargeAmount { get; set; }
+        public long? SurchargeAmount { get; set; }
         
         /// <summary>
-        /// Cashback amount (optional)
+        /// Cashback amount in smallest currency unit (optional)
         /// </summary>
         [JsonPropertyName("cashbackAmount")]
-        public decimal? CashbackAmount { get; set; }
+        public long? CashbackAmount { get; set; }
         
         /// <summary>
         /// Pricing currency (ISO 4217, required)
