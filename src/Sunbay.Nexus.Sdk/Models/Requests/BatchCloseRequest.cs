@@ -20,6 +20,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         public string MerchantId { get; set; } = string.Empty;
         
         /// <summary>
+        /// Channel code. Optional, used to specify a particular channel for batch close.
+        /// </summary>
+        [JsonPropertyName("channelCode")]
+        public string? ChannelCode { get; set; }
+
+        /// <summary>
         /// Batch close request unique identifier. Unique ID to identify this batch close request, used as API idempotency control field, can be used later to query batch close results
         /// </summary>
         [JsonPropertyName("transactionRequestId")]

@@ -73,7 +73,7 @@ class Program
                 Amount = new SaleAmount
                 {
                     OrderAmount = 10000L, // 100.00 USD in cents (smallest currency unit)
-                    PricingCurrency = "USD"
+                    PriceCurrency = "USD"
                 },
                 Description = "Product purchase",
                 TerminalSn = "T1234567890"
@@ -123,6 +123,7 @@ The SDK provides the following transaction methods:
 - `TipAdjustAsync` - Adjust tip amount
 - `QueryAsync` - Query transaction status
 - `BatchCloseAsync` - Batch close settlement
+- `BatchQueryAsync` - Batch query settlement summary data
 
 ## Configuration Options
 

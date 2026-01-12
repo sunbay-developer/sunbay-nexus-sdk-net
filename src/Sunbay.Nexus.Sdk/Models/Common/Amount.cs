@@ -51,10 +51,5 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         [JsonPropertyName("cashbackAmount")]
         public long? CashbackAmount { get; set; }
         
-        /// <summary>
-        /// Pricing currency (ISO 4217)
-        /// </summary>
-        [JsonPropertyName("pricingCurrency")]
-        public string? PricingCurrency { get; set; }
     }
 }

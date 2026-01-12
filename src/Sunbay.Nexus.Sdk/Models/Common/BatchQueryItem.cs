@@ -1,42 +1,41 @@
 using System.Text.Json.Serialization;
-using Sunbay.Nexus.Sdk.Models.Common;
 
-namespace Sunbay.Nexus.Sdk.Models.Responses
+namespace Sunbay.Nexus.Sdk.Models.Common
 {
     /// <summary>
-    /// Batch close response
+    /// Statistics grouped by channel code and price currency
     /// </summary>
-    public class BatchCloseResponse : BaseResponse
+    public class BatchQueryItem
     {
         /// <summary>
         /// Batch number
         /// </summary>
         [JsonPropertyName("batchNo")]
         public string? BatchNo { get; set; }
-        
+
         /// <summary>
-        /// Terminal serial number
+        /// Batch start time, format: yyyy-MM-DDTHH:mm:ss+TIMEZONE (ISO 8601)
         /// </summary>
-        [JsonPropertyName("terminalSn")]
-        public string? TerminalSn { get; set; }
-        
+        [JsonPropertyName("startTime")]
+        public string? StartTime { get; set; }
+
         /// <summary>
-        /// Batch close time, format: yyyy-MM-DDTHH:mm:ss+TIMEZONE (ISO 8601)
+        /// Channel code
         /// </summary>
-        [JsonPropertyName("batchTime")]
-        public string? BatchTime { get; set; }
-        
-        /// <summary>
-        /// Number of transactions in the batch
-        /// </summary>
-        [JsonPropertyName("transactionCount")]
-        public int? TransactionCount { get; set; }
+        [JsonPropertyName("channelCode")]
+        public string? ChannelCode { get; set; }
 
         /// <summary>
         /// Price currency (ISO 4217)
         /// </summary>
         [JsonPropertyName("priceCurrency")]
         public string? PriceCurrency { get; set; }
+
+        /// <summary>
+        /// Total number of transactions
+        /// </summary>
+        [JsonPropertyName("totalCount")]
+        public int? TotalCount { get; set; }
 
         /// <summary>
         /// Net amount, using smallest currency unit (minor units)
@@ -63,4 +62,3 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         public long? TaxAmount { get; set; }
     }
 }
-

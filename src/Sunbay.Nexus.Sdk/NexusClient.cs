@@ -309,7 +309,6 @@ namespace Sunbay.Nexus.Sdk
         
         /// <summary>
         /// Batch close
-        /// Note: This API is currently under development.
         /// </summary>
         /// <param name="request">Batch close request</param>
         /// <param name="cancellationToken">Cancellation token</param>
@@ -330,6 +329,32 @@ namespace Sunbay.Nexus.Sdk
             
             return await _httpClient.PostAsync<BatchCloseRequest, BatchCloseResponse>(
                 ApiConstants.PATH_BATCH_CLOSE,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Batch query
+        /// </summary>
+        /// <param name="request">Batch query request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Batch query response</returns>
+        /// <exception cref="ArgumentNullException">Thrown when request is null</exception>
+        /// <exception cref="SunbayNetworkException">Thrown when network error occurs</exception>
+        /// <exception cref="SunbayBusinessException">Thrown when business error occurs</exception>
+        public async Task<BatchQueryResponse> BatchQueryAsync(
+            BatchQueryRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.GetAsync<BatchQueryRequest, BatchQueryResponse>(
+                ApiConstants.PATH_BATCH_QUERY,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }

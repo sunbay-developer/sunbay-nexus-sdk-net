@@ -26,7 +26,8 @@ namespace Sunbay.Nexus.Sdk.Constants
         public const string PATH_ABORT = SEMI_INTEGRATION_PREFIX + "/transaction/abort";
         public const string PATH_TIP_ADJUST = SEMI_INTEGRATION_PREFIX + "/transaction/tip-adjust";
         public const string PATH_QUERY = COMMON_PREFIX + "/transaction/query";
-        public const string PATH_BATCH_CLOSE = SEMI_INTEGRATION_PREFIX + "/settlement/batch-close";
+        public const string PATH_BATCH_CLOSE = COMMON_PREFIX + "/settlement/batch-close";
+        public const string PATH_BATCH_QUERY = COMMON_PREFIX + "/settlement/batch-query";
         
         // Error Codes
         public const string ERROR_CODE_PARAMETER_ERROR = "C17";

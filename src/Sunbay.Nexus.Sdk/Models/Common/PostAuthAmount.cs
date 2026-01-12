@@ -35,10 +35,10 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         public long? SurchargeAmount { get; set; }
         
         /// <summary>
-        /// Pricing currency (ISO 4217, required)
+        /// Price currency (ISO 4217, required)
         /// </summary>
-        [JsonPropertyName("pricingCurrency")]
-        public string PricingCurrency { get; set; } = string.Empty;
+        [JsonPropertyName("priceCurrency")]
+        public string PriceCurrency { get; set; } = string.Empty;
     }
 }
 
