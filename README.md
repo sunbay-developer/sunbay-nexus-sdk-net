@@ -20,12 +20,12 @@ Install-Package Sunbay.Nexus.Sdk
 
 ### .NET CLI
 ```bash
-dotnet add package Sunbay.Nexus.Sdk --version 1.0.4
+dotnet add package Sunbay.Nexus.Sdk --version 1.0.5
 ```
 
 ### PackageReference
 ```xml
-<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.4" />
+<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.5" />
 ```
 
 ## Quick Start
