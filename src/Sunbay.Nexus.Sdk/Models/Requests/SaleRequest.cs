@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Sunbay.Nexus.Sdk.Enums;
 using Sunbay.Nexus.Sdk.Models.Common;
 
 namespace Sunbay.Nexus.Sdk.Models.Requests
@@ -67,5 +68,11 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("timeExpire")]
         public string? TimeExpire { get; set; }
+
+        /// <summary>
+        /// Receipt print option. NONE: do not print; MERCHANT: merchant copy only; CUSTOMER: customer copy only; BOTH: both copies. Default is NONE when not provided.
+        /// </summary>
+        [JsonPropertyName("printReceipt")]
+        public PrintReceiptOption? PrintReceipt { get; set; }
     }
 }

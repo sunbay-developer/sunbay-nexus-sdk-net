@@ -7,7 +7,7 @@
     
     <!-- NuGet Package Information -->
     <PackageId>Sunbay.Nexus.Sdk</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>Sunbay Developer Team</Authors>
     <Company>Sunbay</Company>
     <Description>Official .NET SDK for Sunbay Nexus Payment Platform. Provides a simple and intuitive API for integrating with Sunbay payment services.</Description>
@@ -19,8 +19,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     
     <!-- Assembly version information for User-Agent -->
-    <AssemblyVersion>1.0.5.0</AssemblyVersion>
-    <FileVersion>1.0.5.0</FileVersion>
+    <AssemblyVersion>1.0.6.0</AssemblyVersion>
+    <FileVersion>1.0.6.0</FileVersion>
     <AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
     
     <!-- Generate XML documentation -->
