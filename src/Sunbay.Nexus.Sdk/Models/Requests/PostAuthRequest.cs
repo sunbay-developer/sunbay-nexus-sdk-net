@@ -74,6 +74,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("printReceipt")]
         public PrintReceiptOption? PrintReceipt { get; set; }
+
+        /// <summary>
+        /// Whether to push the transaction to the terminal. Default: true.
+        /// </summary>
+        [JsonPropertyName("pushToTerminal")]
+        public bool PushToTerminal { get; set; } = true;
     }
 }
 
