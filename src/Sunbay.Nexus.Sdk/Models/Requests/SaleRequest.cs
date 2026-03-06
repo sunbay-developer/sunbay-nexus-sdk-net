@@ -38,6 +38,18 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("amount")]
         public SaleAmount Amount { get; set; } = new();
+
+        /// <summary>
+        /// Payment method information. Optional.
+        /// </summary>
+        [JsonPropertyName("paymentMethod")]
+        public PaymentMethodInfo? PaymentMethod { get; set; }
+
+        /// <summary>
+        /// Card network type for card acceptance. Only effective when paymentMethod.category is CARD; when not specified, system auto-detects.
+        /// </summary>
+        [JsonPropertyName("cardNetworkType")]
+        public CardNetworkType? CardNetworkType { get; set; }
         
         /// <summary>
         /// Product description

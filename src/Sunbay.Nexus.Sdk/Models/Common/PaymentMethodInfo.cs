@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Sunbay.Nexus.Sdk.Enums;
 
 namespace Sunbay.Nexus.Sdk.Models.Common
 {
@@ -18,6 +19,12 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         /// </summary>
         [JsonPropertyName("id")]
         public string? Id { get; set; }
+
+        /// <summary>
+        /// Sub payment method. When category is CARD, must not be specified. When category is EBT and id is EBT, can be one of SNAP, VOUCHER, BENEFIT.
+        /// </summary>
+        [JsonPropertyName("subId")]
+        public PaymentMethodSubId? SubId { get; set; }
     }
 }
 

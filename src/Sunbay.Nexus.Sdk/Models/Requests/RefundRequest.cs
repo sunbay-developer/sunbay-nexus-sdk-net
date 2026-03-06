@@ -56,6 +56,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("paymentMethod")]
         public PaymentMethodInfo? PaymentMethod { get; set; }
+
+        /// <summary>
+        /// Card network type for card acceptance. Only effective when paymentMethod.category is CARD; when not specified, system auto-detects.
+        /// </summary>
+        [JsonPropertyName("cardNetworkType")]
+        public CardNetworkType? CardNetworkType { get; set; }
         
         /// <summary>
         /// Refund reason description. Should be a real description representing the refund reason
