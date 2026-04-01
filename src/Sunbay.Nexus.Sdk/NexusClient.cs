@@ -358,6 +358,54 @@ namespace Sunbay.Nexus.Sdk
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Create Hosted Payment Page checkout session. Redirect the customer to <see cref="CreateCheckoutSessionResponse.CheckoutUrl"/> to complete payment.
+        /// See <see href="https://docs.sunbay.dev/en/refspec/online/checkout/checkout-api-integration">Create checkout session</see>.
+        /// </summary>
+        /// <param name="request">Create session request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Checkout URL and session metadata</returns>
+        public async Task<CreateCheckoutSessionResponse> CreateCheckoutSessionAsync(
+            CreateCheckoutSessionRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.PostAsync<CreateCheckoutSessionRequest, CreateCheckoutSessionResponse>(
+                ApiConstants.PATH_CHECKOUT_CREATE_SESSION,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Online direct payment without creating an HPP session first (e.g. Google Pay / Apple Pay with wallet token).
+        /// See <see href="https://docs.sunbay.dev/en/refspec/online/direct-payment">Direct payment</see>.
+        /// </summary>
+        /// <param name="request">Direct payment request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Payment result</returns>
+        public async Task<DirectPaymentResponse> DirectPaymentAsync(
+            DirectPaymentRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.PostAsync<DirectPaymentRequest, DirectPaymentResponse>(
+                ApiConstants.PATH_CHECKOUT_SALE,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
         
         /// <summary>
         /// Dispose resources asynchronously

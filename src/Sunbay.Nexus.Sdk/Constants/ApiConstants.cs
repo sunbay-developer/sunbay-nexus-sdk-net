@@ -28,6 +28,16 @@ namespace Sunbay.Nexus.Sdk.Constants
         public const string PATH_QUERY = COMMON_PREFIX + "/transaction/query";
         public const string PATH_BATCH_CLOSE = COMMON_PREFIX + "/settlement/batch-close";
         public const string PATH_BATCH_QUERY = COMMON_PREFIX + "/settlement/batch-query";
+
+        /// <summary>
+        /// Online Hosted Payment Page: create checkout session
+        /// </summary>
+        public const string PATH_CHECKOUT_CREATE_SESSION = COMMON_PREFIX + "/checkout/create-session";
+
+        /// <summary>
+        /// Online direct payment (e.g. wallet) without HPP session
+        /// </summary>
+        public const string PATH_CHECKOUT_SALE = COMMON_PREFIX + "/checkout/sale";
         
         // Error Codes
         public const string ERROR_CODE_PARAMETER_ERROR = "C17";
