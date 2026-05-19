@@ -30,6 +30,11 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         /// </summary>
         [JsonPropertyName("originalTransactionRequestId")]
         public string? OriginalTransactionRequestId { get; set; }
+        
+        /// <summary>
+        /// Transaction status
+        /// </summary>
+        [JsonPropertyName("transactionStatus")]
+        public string? TransactionStatus { get; set; }
     }
 }
-

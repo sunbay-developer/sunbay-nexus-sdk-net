@@ -86,5 +86,11 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("printReceipt")]
         public PrintReceiptOption? PrintReceipt { get; set; }
+
+        /// <summary>
+        /// Tip configuration for on-screen tip collection. Required when tipAmount is provided.
+        /// </summary>
+        [JsonPropertyName("tipConfig")]
+        public TipConfig? TipConfig { get; set; }
     }
 }
