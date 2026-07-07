@@ -9,6 +9,8 @@ namespace Sunbay.Nexus.Sdk.Models.Common
     /// </summary>
     public class TipConfig
     {
+        private List<TipSuggestions>? _suggestions;
+
         /// <summary>
         /// Whether to enable on-screen tip
         /// </summary>
@@ -31,6 +33,18 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         /// Tip suggestions configuration
         /// </summary>
         [JsonPropertyName("suggestions")]
-        public List<TipSuggestions>? Suggestions { get; set; }
+        public List<TipSuggestions>? Suggestions
+        {
+            get => _suggestions;
+            set
+            {
+                if (value != null && value.Count > 3)
+                {
+                    throw new ArgumentException("Tip suggestions support up to 3 items.", nameof(Suggestions));
+                }
+
+                _suggestions = value;
+            }
+        }
     }
 }
