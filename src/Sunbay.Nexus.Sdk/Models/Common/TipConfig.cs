@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Sunbay.Nexus.Sdk.Models.Common
@@ -29,24 +31,6 @@ namespace Sunbay.Nexus.Sdk.Models.Common
         /// Tip suggestions configuration
         /// </summary>
         [JsonPropertyName("suggestions")]
-        public TipSuggestions? Suggestions { get; set; }
-    }
-    
-    /// <summary>
-    /// Tip suggestions configuration
-    /// </summary>
-    public class TipSuggestions
-    {
-        /// <summary>
-        /// Fee mode: RATE or AMOUNT
-        /// </summary>
-        [JsonPropertyName("feeMode")]
-        public string? FeeMode { get; set; }
-        
-        /// <summary>
-        /// Suggested tip values (percentages when feeMode is RATE, amounts when feeMode is AMOUNT)
-        /// </summary>
-        [JsonPropertyName("values")]
-        public int[]? Values { get; set; }
+        public List<TipSuggestions>? Suggestions { get; set; }
     }
 }

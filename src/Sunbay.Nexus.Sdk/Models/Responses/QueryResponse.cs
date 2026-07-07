@@ -163,9 +163,9 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         
         /// <summary>
         /// Transaction batch settlement status.
-        /// NB - No batch settlement needed;
-        /// UB - Waiting for batch close;
-        /// BC - Batch closed
+        /// N - No batch settlement needed;
+        /// U - Waiting for batch close;
+        /// C - Batch closed
         /// </summary>
         [JsonPropertyName("transactionBatchStatus")]
         public TransactionBatchStatus? TransactionBatchStatus { get; set; }

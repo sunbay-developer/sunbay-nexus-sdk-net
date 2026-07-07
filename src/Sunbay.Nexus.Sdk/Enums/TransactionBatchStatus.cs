@@ -10,19 +10,19 @@ namespace Sunbay.Nexus.Sdk.Enums
         /// <summary>
         /// No batch settlement needed
         /// </summary>
-        [EnumMember(Value = "NB")]
-        NB,
+        [EnumMember(Value = "N")]
+        N,
 
         /// <summary>
         /// Waiting for batch close
         /// </summary>
-        [EnumMember(Value = "UB")]
-        UB,
+        [EnumMember(Value = "U")]
+        U,
 
         /// <summary>
         /// Batch closed
         /// </summary>
-        [EnumMember(Value = "BC")]
-        BC
+        [EnumMember(Value = "C")]
+        C
     }
 }
