@@ -408,6 +408,32 @@ namespace Sunbay.Nexus.Sdk
         }
         
         /// <summary>
+        /// Online refund for checkout transactions
+        /// </summary>
+        /// <param name="request">Online refund request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Online refund response</returns>
+        /// <exception cref="ArgumentNullException">Thrown when request is null</exception>
+        /// <exception cref="SunbayNetworkException">Thrown when network error occurs</exception>
+        /// <exception cref="SunbayBusinessException">Thrown when business error occurs</exception>
+        public async Task<OnlineRefundResponse> OnlineRefundAsync(
+            OnlineRefundRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.PostAsync<OnlineRefundRequest, OnlineRefundResponse>(
+                ApiConstants.PATH_CHECKOUT_REFUND,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+        
+        /// <summary>
         /// Dispose resources asynchronously
         /// </summary>
         public ValueTask DisposeAsync()

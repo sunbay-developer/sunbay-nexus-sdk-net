@@ -152,5 +152,22 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         /// </summary>
         [JsonPropertyName("attach")]
         public string? Attach { get; set; }
+        
+        /// <summary>
+        /// Related transaction status, indicates the lifecycle change of the current transaction
+        /// due to subsequent transactions (e.g., a sale transaction that was later refunded).
+        /// Possible values: VOIDED/INCREMENTAL/REFUNDED/CAPTURE/PART_REFUNDED
+        /// </summary>
+        [JsonPropertyName("relatedTransactionStatus")]
+        public RelatedTransactionStatus? RelatedTransactionStatus { get; set; }
+        
+        /// <summary>
+        /// Transaction batch settlement status.
+        /// NB - No batch settlement needed;
+        /// UB - Waiting for batch close;
+        /// BC - Batch closed
+        /// </summary>
+        [JsonPropertyName("transactionBatchStatus")]
+        public TransactionBatchStatus? TransactionBatchStatus { get; set; }
     }
 }

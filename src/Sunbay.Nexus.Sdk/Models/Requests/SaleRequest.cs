@@ -88,9 +88,10 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         public PrintReceiptOption? PrintReceipt { get; set; }
 
         /// <summary>
-        /// Tip configuration for on-screen tip collection. Required when tipAmount is provided.
+        /// Signature entry location. Optional values: ON_SCREEN (terminal screen signature), ON_RECEIPT (receipt signature).
+        /// When omitted, the backend default configuration is used.
         /// </summary>
-        [JsonPropertyName("tipConfig")]
-        public TipConfig? TipConfig { get; set; }
+        [JsonPropertyName("signatureEntryLocation")]
+        public string? SignatureEntryLocation { get; set; }
     }
 }

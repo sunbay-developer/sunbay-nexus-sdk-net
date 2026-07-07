@@ -38,6 +38,11 @@ namespace Sunbay.Nexus.Sdk.Constants
         /// Online direct payment (e.g. wallet) without HPP session
         /// </summary>
         public const string PATH_CHECKOUT_SALE = COMMON_PREFIX + "/checkout/sale";
+
+        /// <summary>
+        /// Online refund
+        /// </summary>
+        public const string PATH_CHECKOUT_REFUND = COMMON_PREFIX + "/checkout/refund";
         
         // Error Codes
         public const string ERROR_CODE_PARAMETER_ERROR = "C17";

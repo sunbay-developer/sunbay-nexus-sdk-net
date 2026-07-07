@@ -86,6 +86,13 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("printReceipt")]
         public PrintReceiptOption? PrintReceipt { get; set; }
+
+        /// <summary>
+        /// Signature entry location. Optional values: ON_SCREEN (terminal screen signature), ON_RECEIPT (receipt signature).
+        /// When omitted, the backend default configuration is used.
+        /// </summary>
+        [JsonPropertyName("signatureEntryLocation")]
+        public string? SignatureEntryLocation { get; set; }
     }
 }
 
