@@ -20,12 +20,12 @@ Install-Package Sunbay.Nexus.Sdk
 
 ### .NET CLI
 ```bash
-dotnet add package Sunbay.Nexus.Sdk --version 1.0.9
+dotnet add package Sunbay.Nexus.Sdk --version 1.0.11
 ```
 
 ### PackageReference
 ```xml
-<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.9" />
+<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.11" />
 ```
 
 ## Quick Start
@@ -236,6 +236,21 @@ Business logic errors (parameter validation, API business errors, etc.)
 
 - Documentation: https://docs.sunbay.us
 - Issues: https://github.com/sunbay-developer/sunbay-nexus-sdk-dotnet/issues
+
+## Publish to NuGet
+
+1. Update version in `src/Sunbay.Nexus.Sdk/Sunbay.Nexus.Sdk.csproj` (`<Version>`).
+2. Run:
+
+```bash
+python3 deploy.py
+```
+
+`deploy.py` will:
+- read `PackageId` and `Version` from the `.csproj`
+- pack Release `.nupkg`
+- prompt for NuGet API Key (hidden input)
+- push package to `https://api.nuget.org/v3/index.json`
 
 ## License
 
