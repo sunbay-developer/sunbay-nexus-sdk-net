@@ -384,6 +384,30 @@ namespace Sunbay.Nexus.Sdk
         }
 
         /// <summary>
+        /// Expire/close a checkout session.
+        /// See <see href="https://docs.sunbay.dev/en/refspec/online/checkout/expire-session">Expire checkout session</see>.
+        /// </summary>
+        /// <param name="request">Expire session request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Expiration result</returns>
+        public async Task<ExpireCheckoutSessionResponse> ExpireCheckoutSessionAsync(
+            ExpireCheckoutSessionRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.PostAsync<ExpireCheckoutSessionRequest, ExpireCheckoutSessionResponse>(
+                ApiConstants.PATH_CHECKOUT_EXPIRE_SESSION,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Online direct payment without creating an HPP session first (e.g. Google Pay / Apple Pay with wallet token).
         /// See <see href="https://docs.sunbay.dev/en/refspec/online/direct-payment">Direct payment</see>.
         /// </summary>

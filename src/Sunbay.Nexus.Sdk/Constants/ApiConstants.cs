@@ -43,6 +43,11 @@ namespace Sunbay.Nexus.Sdk.Constants
         /// Online refund
         /// </summary>
         public const string PATH_CHECKOUT_REFUND = COMMON_PREFIX + "/checkout/refund";
+
+        /// <summary>
+        /// Expire/close a checkout session
+        /// </summary>
+        public const string PATH_CHECKOUT_EXPIRE_SESSION = COMMON_PREFIX + "/checkout/expire-session";
         
         // Error Codes
         public const string ERROR_CODE_PARAMETER_ERROR = "C17";
