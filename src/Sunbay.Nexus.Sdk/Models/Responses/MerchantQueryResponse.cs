@@ -28,18 +28,6 @@ namespace Sunbay.Nexus.Sdk.Models.Responses
         public string? Mcc { get; set; }
 
         /// <summary>
-        /// URL of the merchant logo
-        /// </summary>
-        [JsonPropertyName("logo")]
-        public string? Logo { get; set; }
-
-        /// <summary>
-        /// URL of the merchant's small icon / favicon
-        /// </summary>
-        [JsonPropertyName("smallLogo")]
-        public string? SmallLogo { get; set; }
-
-        /// <summary>
         /// ISO 3166-1 alpha-3 country code
         /// </summary>
         [JsonPropertyName("country")]

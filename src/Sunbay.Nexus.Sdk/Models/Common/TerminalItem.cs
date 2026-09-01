@@ -9,6 +9,12 @@ namespace Sunbay.Nexus.Sdk.Models.Common
     public class TerminalItem
     {
         /// <summary>
+        /// Terminal ID
+        /// </summary>
+        [JsonPropertyName("terminalId")]
+        public string? TerminalId { get; set; }
+
+        /// <summary>
         /// Terminal serial number
         /// </summary>
         [JsonPropertyName("sn")]
