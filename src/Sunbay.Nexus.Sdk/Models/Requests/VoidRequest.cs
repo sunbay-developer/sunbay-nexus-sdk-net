@@ -63,6 +63,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         public string? NotifyUrl { get; set; }
 
         /// <summary>
+        /// Terminal event asynchronous notification URL. Only effective when pushToTerminal=true. When provided, terminal status events (card swipe, signature, printing, etc.) will be received in real time during the transaction.
+        /// </summary>
+        [JsonPropertyName("terminalEventNotifyUrl")]
+        public string? TerminalEventNotifyUrl { get; set; }
+
+        /// <summary>
         /// Receipt print option. NONE: do not print; MERCHANT: merchant copy only; CUSTOMER: customer copy only; BOTH: both copies. Default is NONE when not provided.
         /// </summary>
         [JsonPropertyName("printReceipt")]

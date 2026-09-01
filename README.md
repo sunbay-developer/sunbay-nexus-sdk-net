@@ -20,12 +20,12 @@ Install-Package Sunbay.Nexus.Sdk
 
 ### .NET CLI
 ```bash
-dotnet add package Sunbay.Nexus.Sdk --version 1.0.13
+dotnet add package Sunbay.Nexus.Sdk --version 1.0.15
 ```
 
 ### PackageReference
 ```xml
-<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.13" />
+<PackageReference Include="Sunbay.Nexus.Sdk" Version="1.0.15" />
 ```
 
 ## Quick Start
@@ -110,34 +110,61 @@ class Program
 
 ## Available API Methods
 
-The SDK provides the following transaction methods:
-
+Semi-integration (terminal) transactions:
 - `SaleAsync` - Execute a sale transaction
 - `AuthAsync` - Authorization (pre-auth)
 - `ForcedAuthAsync` - Forced authorization
 - `IncrementalAuthAsync` - Incremental authorization
-- `PostAuthAsync` - Post authorization
+- `PostAuthAsync` - Post authorization (capture)
 - `RefundAsync` - Refund transaction
 - `VoidAsync` - Void transaction
-- `AbortAsync` - Abort transaction
+- `AbortAsync` - Abort an in-flight terminal transaction
 - `TipAdjustAsync` - Adjust tip amount
+
+Query / settlement / merchant:
 - `QueryAsync` - Query transaction status
-- `BatchCloseAsync` - Batch close settlement
-- `BatchQueryAsync` - Batch query settlement summary data
+- `BatchCloseAsync` - Trigger a batch close (settlement)
+- `BatchQueryAsync` - Query current-batch aggregated statistics
+- `BatchCloseListAsync` - Query closed (settled) batch records
+- `MerchantQueryAsync` - Query merchant information
+- `MerchantTerminalsQueryAsync` - Query terminals bound to a merchant (token-based pagination)
+
+Online (Hosted Payment Page) checkout:
+- `CreateCheckoutSessionAsync` - Create HPP checkout session
+- `ExpireCheckoutSessionAsync` - Expire/close a checkout session
+- `DirectPaymentAsync` - Direct payment without HPP session (e.g. Google Pay / Apple Pay)
+- `OnlineRefundAsync` - Refund a checkout transaction
+
+All methods are also exposed via the `INexusClient` interface, so you can inject or mock the client in tests.
+
+## Request Parameter Updates
+
+- `TipConfig` now supports `useHostConfig` (default `false`). When `true`, platform tip configuration is fully used and other `TipConfig` fields are ignored.
+- `SaleRequest`, `AuthRequest`, and `RefundRequest` (refund without reference only) now support `signatureConfig`.
+- `signatureEntryLocation` remains supported for compatibility, but is deprecated in favor of `signatureConfig`.
+- `BatchCloseRequest` now supports `printReceipt` with values: `TOTAL`, `DETAIL`, `BOTH`, `NONE`, `AUTO`.
 
 ## Configuration Options
 
 ```csharp
 var client = new NexusClient(new NexusClientOptions
 {
-    ApiKey = "sk_test_xxx",                      // Required
-    BaseUrl = "https://open.sunbay.us",          // Optional, default: https://open.sunbay.us
-    Timeout = TimeSpan.FromSeconds(30),          // Optional, default: 30 seconds
-    MaxRetries = 3,                              // Optional, default: 3
-    MaxTotalConnections = 200,                   // Optional, default: 200
-    MaxConnectionsPerEndpoint = 20               // Optional, default: 20
+    ApiKey = "sk_test_xxx",                                       // Required
+    BaseUrl = "https://open.sunbay.us",                           // Optional, default: https://open.sunbay.us
+    Timeout = TimeSpan.FromSeconds(30),                           // Optional, overall request timeout, default: 30s
+    ConnectTimeout = TimeSpan.FromSeconds(10),                    // Optional, TCP/TLS connect timeout, default: 10s (net6+ only)
+    MaxRetries = 3,                                               // Optional, GET-request retry attempts, default: 3
+    MaxConnectionsPerEndpoint = 200,                              // Optional, per-endpoint pool cap, default: 200
+    MaxTotalConnections = 200,                                    // Optional, kept for API compatibility (currently not enforced by .NET stack)
+    PooledConnectionLifetime = TimeSpan.FromMinutes(5),           // Optional, recycle to pick up DNS/LB changes, default: 5m (net6+ only)
+    PooledConnectionIdleTimeout = TimeSpan.FromMinutes(2)         // Optional, drop silently-dead idle connections, default: 2m (net6+ only)
 });
 ```
+
+### High-concurrency notes
+- On .NET 6+ the SDK uses `SocketsHttpHandler` under the hood; `ConnectTimeout`, `PooledConnectionLifetime`, and `PooledConnectionIdleTimeout` are all honored.
+- On .NET Standard 2.0 the SDK falls back to `HttpClientHandler`; only `Timeout` and `MaxConnectionsPerEndpoint` apply. The other pool knobs are ignored silently.
+- `HttpClient` is created and cached inside the SDK client; **share one `NexusClient` instance across your process** and dispose it on shutdown.
 
 ## Logging
 
@@ -169,25 +196,25 @@ var client = new NexusClient(new NexusClientOptions
 
 ### Using Dependency Injection (ASP.NET Core)
 
-In dependency injection scenarios, you can inject `ILoggerFactory` from the DI container:
+In dependency injection scenarios, register `INexusClient` so consumers can depend on the interface (and mock it in tests):
 
 ```csharp
-// In Startup.cs or Program.cs
-services.AddSingleton<ILoggerFactory>(sp => 
-    LoggerFactory.Create(builder => builder.AddConsole()));
+// In Program.cs
+services.AddSingleton<INexusClient>(sp =>
+    new NexusClient(new NexusClientOptions
+    {
+        ApiKey = Environment.GetEnvironmentVariable("SUNBAY_API_KEY")!,
+        BaseUrl = "https://open.sunbay.us"
+    }, sp.GetService<ILoggerFactory>()));
 
 // Then inject in your service
 public class PaymentService
 {
-    private readonly NexusClient _client;
-    
-    public PaymentService(ILoggerFactory loggerFactory)
+    private readonly INexusClient _client;
+
+    public PaymentService(INexusClient client)
     {
-        _client = new NexusClient(new NexusClientOptions
-        {
-            ApiKey = Environment.GetEnvironmentVariable("SUNBAY_API_KEY")!,
-            BaseUrl = "https://open.sunbay.us"
-        }, loggerFactory);
+        _client = client;
     }
 }
 ```

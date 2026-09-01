@@ -74,6 +74,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("notifyUrl")]
         public string? NotifyUrl { get; set; }
+
+        /// <summary>
+        /// Terminal event asynchronous notification URL. When provided, terminal status events (card swipe, signature, printing, etc.) will be received in real time during the transaction.
+        /// </summary>
+        [JsonPropertyName("terminalEventNotifyUrl")]
+        public string? TerminalEventNotifyUrl { get; set; }
         
         /// <summary>
         /// Transaction expiration time, format: yyyy-MM-DDTHH:mm:ss+TIMEZONE (ISO 8601). Transaction will be closed if payment is not completed after this time. Minimum 3 minutes, maximum 1 day, default 1 day if not provided

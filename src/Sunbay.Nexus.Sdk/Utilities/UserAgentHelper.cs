@@ -7,8 +7,8 @@ namespace Sunbay.Nexus.Sdk.Utilities
 {
     /// <summary>
     /// Helper class for generating User-Agent header value
-    /// Format: SunbayNexusSDK-{Language}/{SDKVersion} {Language}/{LanguageVersion} {OS}/{OSVersion}
-    /// Example: SunbayNexusSDK-CSharp/1.0.0 .NET/8.0.0 Darwin/25.1.0
+    /// Format: SunbayNexusSDK-.NET/{SDKVersion} .NET/{RuntimeVersion} {OS}/{OSVersion}
+    /// Example: SunbayNexusSDK-.NET/1.0.14 .NET/8.0.0 Darwin/25.1.0
     /// </summary>
     internal static class UserAgentHelper
     {
@@ -28,7 +28,7 @@ namespace Sunbay.Nexus.Sdk.Utilities
             var languageVersion = GetLanguageVersion();
             var osInfo = GetOperatingSystemInfo();
             
-            return $"SunbayNexusSDK-CSharp/{sdkVersion} {languageVersion} {osInfo}";
+            return $"SunbayNexusSDK-.NET/{sdkVersion} {languageVersion} {osInfo}";
         }
         
         /// <summary>
@@ -95,8 +95,8 @@ namespace Sunbay.Nexus.Sdk.Utilities
         }
         
         /// <summary>
-        /// Gets C#/.NET runtime version dynamically
-        /// Format: CSharp/{version} (e.g., CSharp/8.0.0)
+        /// Gets .NET runtime version dynamically.
+        /// Format: .NET/{version} (e.g., .NET/8.0.0)
         /// </summary>
         private static string GetLanguageVersion()
         {
@@ -107,18 +107,16 @@ namespace Sunbay.Nexus.Sdk.Utilities
                 var frameworkDescription = RuntimeInformation.FrameworkDescription;
                 
                 // Extract version number from framework description
-                // Format: ".NET 8.0.0" or ".NET Framework 4.8.0"
                 var parts = frameworkDescription.Split(' ');
                 if (parts.Length >= 2)
                 {
                     var version = parts[parts.Length - 1];
-                    // Use "CSharp" as language name to match format: SunbayNexusSDK-CSharp/1.0.0 CSharp/8.0.0
-                    return $"CSharp/{version}";
+                    return $".NET/{version}";
                 }
                 
                 // Fallback to Environment.Version (CLR version)
                 var clrVersion = Environment.Version;
-                return $"CSharp/{clrVersion.Major}.{clrVersion.Minor}.{clrVersion.Build}";
+                return $".NET/{clrVersion.Major}.{clrVersion.Minor}.{clrVersion.Build}";
             }
             catch
             {
@@ -126,11 +124,11 @@ namespace Sunbay.Nexus.Sdk.Utilities
                 try
                 {
                     var version = Environment.Version;
-                    return $"CSharp/{version.Major}.{version.Minor}.{version.Build}";
+                    return $".NET/{version.Major}.{version.Minor}.{version.Build}";
                 }
                 catch
                 {
-                    return "CSharp/Unknown";
+                    return ".NET/Unknown";
                 }
             }
         }

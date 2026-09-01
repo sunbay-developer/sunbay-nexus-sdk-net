@@ -74,6 +74,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("notifyUrl")]
         public string? NotifyUrl { get; set; }
+
+        /// <summary>
+        /// Terminal event asynchronous notification URL. When provided, terminal status events (card swipe, signature, printing, etc.) will be received in real time during the transaction.
+        /// </summary>
+        [JsonPropertyName("terminalEventNotifyUrl")]
+        public string? TerminalEventNotifyUrl { get; set; }
         
         /// <summary>
         /// Transaction expiration time (ISO 8601 format)
@@ -88,10 +94,16 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         public PrintReceiptOption? PrintReceipt { get; set; }
 
         /// <summary>
-        /// Signature entry location. Optional values: ON_SCREEN (terminal screen signature), ON_RECEIPT (receipt signature).
+        /// Deprecated. Signature entry location. Optional values: ON_SCREEN (terminal screen signature), ON_RECEIPT (receipt signature), NONE (no signature).
         /// When omitted, the backend default configuration is used.
         /// </summary>
         [JsonPropertyName("signatureEntryLocation")]
         public string? SignatureEntryLocation { get; set; }
+
+        /// <summary>
+        /// Signature configuration. When omitted, SUNBAY platform signature configuration is used.
+        /// </summary>
+        [JsonPropertyName("signatureConfig")]
+        public SignatureConfig? SignatureConfig { get; set; }
     }
 }

@@ -8,6 +8,13 @@ namespace Sunbay.Nexus.Sdk.Models.Common
     public class TipConfig
     {
         /// <summary>
+        /// Whether to use SUNBAY platform tip configuration. Default: false.
+        /// When true, onScreenTip, tipMode, tipWithTax, and suggestions are ignored.
+        /// </summary>
+        [JsonPropertyName("useHostConfig")]
+        public bool UseHostConfig { get; set; }
+
+        /// <summary>
         /// Whether to enable on-screen tip
         /// </summary>
         [JsonPropertyName("onScreenTip")]

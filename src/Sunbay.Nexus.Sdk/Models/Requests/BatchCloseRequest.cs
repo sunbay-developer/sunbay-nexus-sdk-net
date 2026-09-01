@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Sunbay.Nexus.Sdk.Enums;
 
 namespace Sunbay.Nexus.Sdk.Models.Requests
 {
@@ -48,6 +49,12 @@ namespace Sunbay.Nexus.Sdk.Models.Requests
         /// </summary>
         [JsonPropertyName("attach")]
         public string? Attach { get; set; }
+
+        /// <summary>
+        /// Batch close report print option. TOTAL: summary only; DETAIL: detail only; BOTH: summary + detail; NONE: no report; AUTO: use SUNBAY platform configuration.
+        /// When omitted, SUNBAY platform configuration is used.
+        /// </summary>
+        [JsonPropertyName("printReceipt")]
+        public BatchClosePrintReceiptOption? PrintReceipt { get; set; }
     }
 }
-

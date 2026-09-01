@@ -5,107 +5,98 @@ namespace Sunbay.Nexus.Sdk.Constants
     /// </summary>
     internal static class ApiConstants
     {
-        /// <summary>
-        /// Semi-integration API path prefix
-        /// </summary>
-        public const string SEMI_INTEGRATION_PREFIX = "/v1/semi-integration";
+        /// <summary>Semi-integration API path prefix</summary>
+        public const string SemiIntegrationPrefix = "/v1/semi-integration";
 
-        /// <summary>
-        /// Common API path prefix
-        /// </summary>
-        public const string COMMON_PREFIX = "/v1";
+        /// <summary>Common API path prefix</summary>
+        public const string CommonPrefix = "/v1";
 
         // API Paths
-        public const string PATH_SALE = SEMI_INTEGRATION_PREFIX + "/transaction/sale";
-        public const string PATH_AUTH = SEMI_INTEGRATION_PREFIX + "/transaction/auth";
-        public const string PATH_FORCED_AUTH = SEMI_INTEGRATION_PREFIX + "/transaction/forced-auth";
-        public const string PATH_INCREMENTAL_AUTH = SEMI_INTEGRATION_PREFIX + "/transaction/incremental-auth";
-        public const string PATH_POST_AUTH = SEMI_INTEGRATION_PREFIX + "/transaction/post-auth";
-        public const string PATH_REFUND = SEMI_INTEGRATION_PREFIX + "/transaction/refund";
-        public const string PATH_VOID = SEMI_INTEGRATION_PREFIX + "/transaction/void";
-        public const string PATH_ABORT = SEMI_INTEGRATION_PREFIX + "/transaction/abort";
-        public const string PATH_TIP_ADJUST = SEMI_INTEGRATION_PREFIX + "/transaction/tip-adjust";
-        public const string PATH_QUERY = COMMON_PREFIX + "/transaction/query";
-        public const string PATH_BATCH_CLOSE = COMMON_PREFIX + "/settlement/batch-close";
-        public const string PATH_BATCH_QUERY = COMMON_PREFIX + "/settlement/batch-query";
+        public const string PathSale = SemiIntegrationPrefix + "/transaction/sale";
+        public const string PathAuth = SemiIntegrationPrefix + "/transaction/auth";
+        public const string PathForcedAuth = SemiIntegrationPrefix + "/transaction/forced-auth";
+        public const string PathIncrementalAuth = SemiIntegrationPrefix + "/transaction/incremental-auth";
+        public const string PathPostAuth = SemiIntegrationPrefix + "/transaction/post-auth";
+        public const string PathRefund = SemiIntegrationPrefix + "/transaction/refund";
+        public const string PathVoid = SemiIntegrationPrefix + "/transaction/void";
+        public const string PathAbort = SemiIntegrationPrefix + "/transaction/abort";
+        public const string PathTipAdjust = SemiIntegrationPrefix + "/transaction/tip-adjust";
+        public const string PathQuery = CommonPrefix + "/transaction/query";
+        public const string PathBatchClose = CommonPrefix + "/settlement/batch-close";
+        public const string PathBatchQuery = CommonPrefix + "/settlement/batch-query";
+        public const string PathBatchCloseList = CommonPrefix + "/settlement/batch-close-list";
+        public const string PathMerchantQuery = CommonPrefix + "/merchant/query";
+        public const string PathMerchantTerminalsQuery = CommonPrefix + "/merchant/terminals/query";
 
-        /// <summary>
-        /// Online Hosted Payment Page: create checkout session
-        /// </summary>
-        public const string PATH_CHECKOUT_CREATE_SESSION = COMMON_PREFIX + "/checkout/create-session";
+        /// <summary>Online Hosted Payment Page: create checkout session</summary>
+        public const string PathCheckoutCreateSession = CommonPrefix + "/checkout/create-session";
 
-        /// <summary>
-        /// Online direct payment (e.g. wallet) without HPP session
-        /// </summary>
-        public const string PATH_CHECKOUT_SALE = COMMON_PREFIX + "/checkout/sale";
+        /// <summary>Online direct payment (e.g. wallet) without HPP session</summary>
+        public const string PathCheckoutSale = CommonPrefix + "/checkout/sale";
 
-        /// <summary>
-        /// Online refund
-        /// </summary>
-        public const string PATH_CHECKOUT_REFUND = COMMON_PREFIX + "/checkout/refund";
+        /// <summary>Online refund</summary>
+        public const string PathCheckoutRefund = CommonPrefix + "/checkout/refund";
 
-        /// <summary>
-        /// Expire/close a checkout session
-        /// </summary>
-        public const string PATH_CHECKOUT_EXPIRE_SESSION = COMMON_PREFIX + "/checkout/expire-session";
-        
+        /// <summary>Expire/close a checkout session</summary>
+        public const string PathCheckoutExpireSession = CommonPrefix + "/checkout/expire-session";
+
         // Error Codes
-        public const string ERROR_CODE_PARAMETER_ERROR = "C17";
-        public const string ERROR_CODE_NETWORK_ERROR = "NETWORK_ERROR";
-        public const string ERROR_CODE_TIMEOUT = "TIMEOUT";
-        public const string ERROR_CODE_SERVER_ERROR = "SERVER_ERROR";
-        public const string ERROR_CODE_INVALID_RESPONSE = "INVALID_RESPONSE";
-        
+        public const string ErrorCodeParameterError = "C17";
+        public const string ErrorCodeNetworkError = "NETWORK_ERROR";
+        public const string ErrorCodeTimeout = "TIMEOUT";
+        public const string ErrorCodeServerError = "SERVER_ERROR";
+        public const string ErrorCodeInvalidResponse = "INVALID_RESPONSE";
+
         // Default Values
-        public const string DEFAULT_BASE_URL = "https://open.sunbay.us";
-        public const int DEFAULT_TIMEOUT_SECONDS = 30;
-        public const int DEFAULT_MAX_RETRIES = 3;
-        public const int DEFAULT_MAX_TOTAL_CONNECTIONS = 200;
-        public const int DEFAULT_MAX_CONNECTIONS_PER_ENDPOINT = 20;
+        public const string DefaultBaseUrl = "https://open.sunbay.us";
+        public const int DefaultTimeoutSeconds = 30;
+        public const int DefaultConnectTimeoutSeconds = 10;
+        public const int DefaultMaxRetries = 3;
+        public const int DefaultMaxTotalConnections = 200;
+        public const int DefaultMaxConnectionsPerEndpoint = 200;
+        public const int DefaultPooledConnectionLifetimeSeconds = 300;
+        public const int DefaultPooledConnectionIdleTimeoutSeconds = 120;
 
         // Error Messages
-        public const string MESSAGE_API_KEY_REQUIRED = "API key cannot be null or empty";
-        public const string MESSAGE_FAILED_PARSE_RESPONSE = "Failed to parse API response";
-        public const string MESSAGE_RESPONSE_NULL = "API response is null";
-        public const string MESSAGE_SERVER_ERROR = "Server error";
-        public const string MESSAGE_REQUEST_FAILED = "Request failed";
-        public const string MESSAGE_REQUEST_TIMEOUT = "Request timeout";
-        public const string MESSAGE_EMPTY_RESPONSE_BODY = "Empty response body";
-        public const string MESSAGE_INVALID_URL = "Invalid URL";
-        
+        public const string MessageApiKeyRequired = "API key cannot be null or empty";
+        public const string MessageFailedParseResponse = "Failed to parse API response";
+        public const string MessageResponseNull = "API response is null";
+        public const string MessageServerError = "Server error";
+        public const string MessageRequestFailed = "Request failed";
+        public const string MessageRequestTimeout = "Request timeout";
+        public const string MessageEmptyResponseBody = "Empty response body";
+        public const string MessageInvalidUrl = "Invalid URL";
+
         // HTTP Methods
-        public const string HTTP_METHOD_POST = "POST";
-        public const string HTTP_METHOD_GET = "GET";
-        
+        public const string HttpMethodPost = "POST";
+        public const string HttpMethodGet = "GET";
+
         // HTTP Status Codes
-        public const int HTTP_STATUS_OK_START = 200;
-        public const int HTTP_STATUS_OK_END = 300;
-        public const int HTTP_STATUS_CLIENT_ERROR_START = 400;
-        public const int HTTP_STATUS_CLIENT_ERROR_END = 500;
-        public const int HTTP_STATUS_SERVER_ERROR_START = 500;
-        
+        public const int HttpStatusOkStart = 200;
+        public const int HttpStatusOkEnd = 300;
+        public const int HttpStatusClientErrorStart = 400;
+        public const int HttpStatusClientErrorEnd = 500;
+        public const int HttpStatusServerErrorStart = 500;
+
         // Response Success Code
-        public const string RESPONSE_SUCCESS_CODE = "0";
-        
+        public const string ResponseSuccessCode = "0";
+
         // Authorization Header Prefix
-        public const string AUTHORIZATION_BEARER_PREFIX = "Bearer ";
-        
+        public const string AuthorizationBearerPrefix = "Bearer ";
+
         // JSON Field Names
-        public const string JSON_FIELD_CODE = "code";
-        public const string JSON_FIELD_MSG = "msg";
-        public const string JSON_FIELD_DATA = "data";
-        public const string JSON_FIELD_TRACE_ID = "traceId";
-        
-        // Getter Method Name Prefix Length
-        public const int GETTER_METHOD_PREFIX_LENGTH = 3;
-        
+        public const string JsonFieldCode = "code";
+        public const string JsonFieldMsg = "msg";
+        public const string JsonFieldData = "data";
+        public const string JsonFieldTraceId = "traceId";
+
         // HTTP Header Names
-        public const string HEADER_AUTHORIZATION = "Authorization";
-        public const string HEADER_CONTENT_TYPE = "Content-Type";
-        public const string HEADER_REQUEST_ID = "X-Client-Request-Id";
-        public const string HEADER_TIMESTAMP = "X-Timestamp";
-        
+        public const string HeaderAuthorization = "Authorization";
+        public const string HeaderContentType = "Content-Type";
+        public const string HeaderRequestId = "X-Client-Request-Id";
+        public const string HeaderTimestamp = "X-Timestamp";
+
         // Content Types
-        public const string CONTENT_TYPE_JSON = "application/json";
+        public const string ContentTypeJson = "application/json";
     }
 }

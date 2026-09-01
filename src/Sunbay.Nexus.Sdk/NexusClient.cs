@@ -11,10 +11,10 @@ using Sunbay.Nexus.Sdk.Models.Responses;
 namespace Sunbay.Nexus.Sdk
 {
     /// <summary>
-    /// Sunbay Nexus API client
+    /// Sunbay Nexus API client.
     /// This client is thread-safe and can be safely used by multiple threads.
     /// </summary>
-    public class NexusClient : IAsyncDisposable
+    public class NexusClient : INexusClient
     {
         private readonly HttpClientWrapper _httpClient;
         private bool _disposed;
@@ -24,8 +24,8 @@ namespace Sunbay.Nexus.Sdk
         /// </summary>
         /// <param name="options">Client configuration options</param>
         /// <param name="loggerFactory">Optional logger factory instance</param>
-        /// <exception cref="ArgumentNullException">Thrown when options is null</exception>
-        /// <exception cref="SunbayBusinessException">Thrown when API key is invalid</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null</exception>
+        /// <exception cref="SunbayBusinessException">Thrown when <see cref="NexusClientOptions.ApiKey"/> is null or whitespace</exception>
         public NexusClient(NexusClientOptions options, ILoggerFactory? loggerFactory = null)
         {
 #if NETSTANDARD2_0
@@ -38,8 +38,8 @@ namespace Sunbay.Nexus.Sdk
             if (string.IsNullOrWhiteSpace(options.ApiKey))
             {
                 throw new SunbayBusinessException(
-                    ApiConstants.ERROR_CODE_PARAMETER_ERROR,
-                    ApiConstants.MESSAGE_API_KEY_REQUIRED);
+                    ApiConstants.ErrorCodeParameterError,
+                    ApiConstants.MessageApiKeyRequired);
             }
             
             // Create logger for HttpClientWrapper with specific category
@@ -68,7 +68,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<SaleRequest, SaleResponse>(
-                ApiConstants.PATH_SALE,
+                ApiConstants.PathSale,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -94,7 +94,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<AuthRequest, AuthResponse>(
-                ApiConstants.PATH_AUTH,
+                ApiConstants.PathAuth,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -120,7 +120,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<ForcedAuthRequest, ForcedAuthResponse>(
-                ApiConstants.PATH_FORCED_AUTH,
+                ApiConstants.PathForcedAuth,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -146,7 +146,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<IncrementalAuthRequest, IncrementalAuthResponse>(
-                ApiConstants.PATH_INCREMENTAL_AUTH,
+                ApiConstants.PathIncrementalAuth,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -172,7 +172,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<PostAuthRequest, PostAuthResponse>(
-                ApiConstants.PATH_POST_AUTH,
+                ApiConstants.PathPostAuth,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -198,7 +198,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<RefundRequest, RefundResponse>(
-                ApiConstants.PATH_REFUND,
+                ApiConstants.PathRefund,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -224,7 +224,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<VoidRequest, VoidResponse>(
-                ApiConstants.PATH_VOID,
+                ApiConstants.PathVoid,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -250,7 +250,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<AbortRequest, AbortResponse>(
-                ApiConstants.PATH_ABORT,
+                ApiConstants.PathAbort,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -276,7 +276,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<TipAdjustRequest, TipAdjustResponse>(
-                ApiConstants.PATH_TIP_ADJUST,
+                ApiConstants.PathTipAdjust,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -302,7 +302,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.GetAsync<QueryRequest, QueryResponse>(
-                ApiConstants.PATH_QUERY,
+                ApiConstants.PathQuery,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -328,7 +328,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
             
             return await _httpClient.PostAsync<BatchCloseRequest, BatchCloseResponse>(
-                ApiConstants.PATH_BATCH_CLOSE,
+                ApiConstants.PathBatchClose,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -354,7 +354,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
 
             return await _httpClient.GetAsync<BatchQueryRequest, BatchQueryResponse>(
-                ApiConstants.PATH_BATCH_QUERY,
+                ApiConstants.PathBatchQuery,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -378,7 +378,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
 
             return await _httpClient.PostAsync<CreateCheckoutSessionRequest, CreateCheckoutSessionResponse>(
-                ApiConstants.PATH_CHECKOUT_CREATE_SESSION,
+                ApiConstants.PathCheckoutCreateSession,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -402,7 +402,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
 
             return await _httpClient.PostAsync<ExpireCheckoutSessionRequest, ExpireCheckoutSessionResponse>(
-                ApiConstants.PATH_CHECKOUT_EXPIRE_SESSION,
+                ApiConstants.PathCheckoutExpireSession,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -426,7 +426,7 @@ namespace Sunbay.Nexus.Sdk
 #endif
 
             return await _httpClient.PostAsync<DirectPaymentRequest, DirectPaymentResponse>(
-                ApiConstants.PATH_CHECKOUT_SALE,
+                ApiConstants.PathCheckoutSale,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -452,11 +452,92 @@ namespace Sunbay.Nexus.Sdk
 #endif
 
             return await _httpClient.PostAsync<OnlineRefundRequest, OnlineRefundResponse>(
-                ApiConstants.PATH_CHECKOUT_REFUND,
+                ApiConstants.PathCheckoutRefund,
                 request,
                 cancellationToken).ConfigureAwait(false);
         }
         
+        /// <summary>
+        /// Query closed (settled) batch records. Supports filtering by payment channel and time range.
+        /// If no time range is specified, the API returns data from the last 7 days by default.
+        /// The maximum query span is 30 days.
+        /// </summary>
+        /// <param name="request">Batch close list request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Batch close list response</returns>
+        /// <exception cref="ArgumentNullException">Thrown when request is null</exception>
+        /// <exception cref="SunbayNetworkException">Thrown when network error occurs</exception>
+        /// <exception cref="SunbayBusinessException">Thrown when business error occurs</exception>
+        public async Task<BatchCloseListResponse> BatchCloseListAsync(
+            BatchCloseListRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.GetAsync<BatchCloseListRequest, BatchCloseListResponse>(
+                ApiConstants.PathBatchCloseList,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Query merchant information by SUNBAY platform merchant ID.
+        /// </summary>
+        /// <param name="request">Merchant query request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Merchant query response</returns>
+        /// <exception cref="ArgumentNullException">Thrown when request is null</exception>
+        /// <exception cref="SunbayNetworkException">Thrown when network error occurs</exception>
+        /// <exception cref="SunbayBusinessException">Thrown when business error occurs</exception>
+        public async Task<MerchantQueryResponse> MerchantQueryAsync(
+            MerchantQueryRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.GetAsync<MerchantQueryRequest, MerchantQueryResponse>(
+                ApiConstants.PathMerchantQuery,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Query terminals bound to a merchant. Uses token-based pagination (up to 100 per page);
+        /// pass <see cref="MerchantTerminalsQueryRequest.NextToken"/> from the previous response to fetch the next page.
+        /// </summary>
+        /// <param name="request">Merchant terminals query request</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Merchant terminals query response</returns>
+        /// <exception cref="ArgumentNullException">Thrown when request is null</exception>
+        /// <exception cref="SunbayNetworkException">Thrown when network error occurs</exception>
+        /// <exception cref="SunbayBusinessException">Thrown when business error occurs</exception>
+        public async Task<MerchantTerminalsQueryResponse> MerchantTerminalsQueryAsync(
+            MerchantTerminalsQueryRequest request,
+            CancellationToken cancellationToken = default)
+        {
+#if NETSTANDARD2_0
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+#else
+            ArgumentNullException.ThrowIfNull(request);
+#endif
+
+            return await _httpClient.GetAsync<MerchantTerminalsQueryRequest, MerchantTerminalsQueryResponse>(
+                ApiConstants.PathMerchantTerminalsQuery,
+                request,
+                cancellationToken).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Dispose resources asynchronously
         /// </summary>

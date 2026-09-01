@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -44,10 +43,31 @@ namespace Sunbay.Nexus.Sdk.Http
             // Note: For SDK libraries, managing HttpClient lifecycle directly is acceptable
             // as it provides full control over configuration and doesn't require DI container.
             // The HttpClient instance is properly disposed via IDisposable implementation.
+#if NETSTANDARD2_0
             var handler = new HttpClientHandler
             {
                 MaxConnectionsPerServer = options.MaxConnectionsPerEndpoint
             };
+#else
+            // SocketsHttpHandler provides finer-grained pool control on .NET 6+:
+            // - PooledConnectionLifetime: recycle to pick up DNS/LB changes
+            // - PooledConnectionIdleTimeout: drop silently-dead idle connections
+            // - ConnectTimeout: fail fast on unreachable hosts, independent of the overall request timeout
+            var handler = new SocketsHttpHandler
+            {
+                MaxConnectionsPerServer = options.MaxConnectionsPerEndpoint,
+                PooledConnectionLifetime = options.PooledConnectionLifetime > TimeSpan.Zero
+                    ? options.PooledConnectionLifetime
+                    : Timeout.InfiniteTimeSpan,
+                PooledConnectionIdleTimeout = options.PooledConnectionIdleTimeout > TimeSpan.Zero
+                    ? options.PooledConnectionIdleTimeout
+                    : Timeout.InfiniteTimeSpan,
+                ConnectTimeout = options.ConnectTimeout > TimeSpan.Zero
+                    ? options.ConnectTimeout
+                    : Timeout.InfiniteTimeSpan,
+                AutomaticDecompression = System.Net.DecompressionMethods.All
+            };
+#endif
             
             _httpClient = new HttpClient(handler, disposeHandler: true)
             {
@@ -56,7 +76,7 @@ namespace Sunbay.Nexus.Sdk.Http
             };
             
             // Set default headers
-            _httpClient.DefaultRequestHeaders.Add(ApiConstants.HEADER_AUTHORIZATION, $"{ApiConstants.AUTHORIZATION_BEARER_PREFIX}{options.ApiKey}");
+            _httpClient.DefaultRequestHeaders.Add(ApiConstants.HeaderAuthorization, $"{ApiConstants.AuthorizationBearerPrefix}{options.ApiKey}");
             _httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgentHelper.UserAgent);
             
             // JSON serialization options
@@ -80,7 +100,7 @@ namespace Sunbay.Nexus.Sdk.Http
             where TResponse : BaseResponse
         {
             var json = JsonSerializer.Serialize(request, _jsonOptions);
-            var content = new StringContent(json, Encoding.UTF8, ApiConstants.CONTENT_TYPE_JSON);
+            var content = new StringContent(json, Encoding.UTF8, ApiConstants.ContentTypeJson);
             
             // Build full URL (baseUrl + path) like Java version
             var fullUrl = new Uri(_httpClient.BaseAddress!, path);
@@ -89,10 +109,10 @@ namespace Sunbay.Nexus.Sdk.Http
                 Content = content
             };
             
-            AddCommonHeaders(httpRequest, ApiConstants.HTTP_METHOD_POST);
+            AddCommonHeaders(httpRequest, ApiConstants.HttpMethodPost);
             
             // Explicitly set Content-Type header like Java version
-            httpRequest.Content!.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ApiConstants.CONTENT_TYPE_JSON);
+            httpRequest.Content!.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(ApiConstants.ContentTypeJson);
             
             return await ExecuteRequestAsync<TResponse>(httpRequest, json, cancellationToken)
                 .ConfigureAwait(false);
@@ -110,7 +130,7 @@ namespace Sunbay.Nexus.Sdk.Http
             var url = BuildUrlWithQuery(path, request);
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
             
-            AddCommonHeaders(httpRequest, ApiConstants.HTTP_METHOD_GET);
+            AddCommonHeaders(httpRequest, ApiConstants.HttpMethodGet);
             
             return await ExecuteWithRetryAsync(async () =>
             {
@@ -120,7 +140,9 @@ namespace Sunbay.Nexus.Sdk.Http
         }
         
         /// <summary>
-        /// Build URL with query parameters from request object
+        /// Build URL with query parameters from request object.
+        /// Reads <see cref="JsonPropertyNameAttribute"/> to honor the same wire-format
+        /// naming as JSON body serialization; falls back to camelCase if unset.
         /// </summary>
         private string BuildUrlWithQuery<T>(string path, T? request)
         {
@@ -128,66 +150,45 @@ namespace Sunbay.Nexus.Sdk.Http
             {
                 return path;
             }
-            
-            var queryParams = new List<string>();
-            var type = typeof(T);
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            
-            foreach (var property in properties)
-            {
-                var value = property.GetValue(request);
-                if (value != null)
-                {
-                    var paramName = ConvertPropertyNameToParamName(property.Name);
-                    var paramValue = Uri.EscapeDataString(value.ToString() ?? string.Empty);
-                    queryParams.Add($"{paramName}={paramValue}");
-                }
-            }
-            
-            if (queryParams.Count == 0)
+
+            var properties = TypeQueryCache.GetProperties(typeof(T));
+            if (properties.Length == 0)
             {
                 return path;
             }
-            
-            var separator = path.Contains('?') ? "&" : "?";
-            return $"{path}{separator}{string.Join("&", queryParams)}";
-        }
-        
-        /// <summary>
-        /// Convert property name to query parameter name (camelCase)
-        /// e.g., AppId -> appId, TransactionId -> transactionId
-        /// </summary>
-        private string ConvertPropertyNameToParamName(string propertyName)
-        {
-            if (string.IsNullOrEmpty(propertyName))
+
+            StringBuilder? sb = null;
+            var first = !path.Contains('?');
+
+            foreach (var (getter, name) in properties)
             {
-                return propertyName;
+                var value = getter(request!);
+                if (value is null)
+                {
+                    continue;
+                }
+
+                sb ??= new StringBuilder(path.Length + 64).Append(path);
+                sb.Append(first ? '?' : '&');
+                first = false;
+                sb.Append(name).Append('=').Append(Uri.EscapeDataString(value.ToString() ?? string.Empty));
             }
-            
-#if NETSTANDARD2_0
-            return char.ToLowerInvariant(propertyName[0]) + propertyName.Substring(1);
-#else
-            return char.ToLowerInvariant(propertyName[0]) + propertyName[1..];
-#endif
+
+            return sb?.ToString() ?? path;
         }
-        
+
         /// <summary>
         /// Add common headers to request
         /// </summary>
         private void AddCommonHeaders(HttpRequestMessage request, string method)
         {
-            request.Headers.Add(ApiConstants.HEADER_REQUEST_ID, IdGenerator.GenerateRequestId());
+            request.Headers.Add(ApiConstants.HeaderRequestId, Guid.NewGuid().ToString("N"));
 #if NETSTANDARD2_0
             var timestamp = (long)(DateTimeOffset.UtcNow - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalMilliseconds;
-            request.Headers.Add(ApiConstants.HEADER_TIMESTAMP, timestamp.ToString());
+            request.Headers.Add(ApiConstants.HeaderTimestamp, timestamp.ToString());
 #else
-            request.Headers.Add(ApiConstants.HEADER_TIMESTAMP, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString());
+            request.Headers.Add(ApiConstants.HeaderTimestamp, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString());
 #endif
-            
-            if (method == ApiConstants.HTTP_METHOD_POST)
-            {
-                // Content-Type is set on HttpContent, not header
-            }
         }
         
         /// <summary>
@@ -237,11 +238,11 @@ namespace Sunbay.Nexus.Sdk.Http
                         requestMethod, requestUrl, statusCode, responseBody);
                 }
                 
-                if (statusCode >= ApiConstants.HTTP_STATUS_OK_START && statusCode < ApiConstants.HTTP_STATUS_OK_END)
+                if (statusCode >= ApiConstants.HttpStatusOkStart && statusCode < ApiConstants.HttpStatusOkEnd)
                 {
                     if (string.IsNullOrWhiteSpace(responseBody))
                     {
-                        throw new SunbayNetworkException(ApiConstants.MESSAGE_EMPTY_RESPONSE_BODY, false);
+                        throw new SunbayNetworkException(ApiConstants.MessageEmptyResponseBody, false);
                     }
                     
                     // Parse response with data field support
@@ -249,7 +250,7 @@ namespace Sunbay.Nexus.Sdk.Http
                     var result = ParseResponse<TResponse>(responseBody, requestMethod, requestUrl);
                     if (result == null)
                     {
-                        throw new SunbayNetworkException(ApiConstants.MESSAGE_FAILED_PARSE_RESPONSE, false);
+                        throw new SunbayNetworkException(ApiConstants.MessageFailedParseResponse, false);
                     }
                     
                     return result;
@@ -271,7 +272,7 @@ namespace Sunbay.Nexus.Sdk.Http
                 {
                     _logger.LogWarning(ex, "Request timeout {Method} {Url}", requestMethod, requestUrl);
                 }
-                throw new SunbayNetworkException(ApiConstants.MESSAGE_REQUEST_TIMEOUT, ex, true);
+                throw new SunbayNetworkException(ApiConstants.MessageRequestTimeout, ex, true);
             }
             catch (HttpRequestException ex)
             {
@@ -298,40 +299,40 @@ namespace Sunbay.Nexus.Sdk.Http
                 var root = document.RootElement;
                 
                 // Extract base fields (code, msg, traceId)
-                var code = root.TryGetProperty(ApiConstants.JSON_FIELD_CODE, out var codeElement) 
+                var code = root.TryGetProperty(ApiConstants.JsonFieldCode, out var codeElement) 
                     ? codeElement.GetString() 
                     : null;
-                var msg = root.TryGetProperty(ApiConstants.JSON_FIELD_MSG, out var msgElement) 
+                var msg = root.TryGetProperty(ApiConstants.JsonFieldMsg, out var msgElement) 
                     ? msgElement.GetString() 
                     : null;
-                var traceId = root.TryGetProperty(ApiConstants.JSON_FIELD_TRACE_ID, out var traceIdElement) 
+                var traceId = root.TryGetProperty(ApiConstants.JsonFieldTraceId, out var traceIdElement) 
                     ? traceIdElement.GetString() 
                     : null;
                 
                 // Check if code != "0", throw exception immediately
-                if (code != ApiConstants.RESPONSE_SUCCESS_CODE)
+                if (code != ApiConstants.ResponseSuccessCode)
                 {
                     if (_logger?.IsEnabled(LogLevel.Error) == true)
                     {
                         _logger.LogError("API error {Method} {Url} - code: {Code}, msg: {Message}, traceId: {TraceId}",
                             requestMethod, requestUrl, code ?? "null", msg ?? "null", traceId ?? "null");
                     }
-                    throw new SunbayBusinessException(code ?? ApiConstants.ERROR_CODE_INVALID_RESPONSE, msg ?? "Unknown error", traceId);
+                    throw new SunbayBusinessException(code ?? ApiConstants.ErrorCodeInvalidResponse, msg ?? "Unknown error", traceId);
                 }
                 
                 // Extract data field if exists
                 TResponse? result;
-                if (root.TryGetProperty(ApiConstants.JSON_FIELD_DATA, out var dataElement) && 
+                if (root.TryGetProperty(ApiConstants.JsonFieldData, out var dataElement) && 
                     dataElement.ValueKind != JsonValueKind.Null)
                 {
-                    // Parse data field to response type
-                    var dataJson = dataElement.GetRawText();
-                    result = JsonSerializer.Deserialize<TResponse>(dataJson, _jsonOptions);
+                    // Deserialize directly from the JsonElement to avoid a second JSON parse
+                    // (previously: dataElement.GetRawText() -> allocate string -> re-parse)
+                    result = dataElement.Deserialize<TResponse>(_jsonOptions);
                 }
                 else
                 {
-                    // No data field, parse entire response
-                    result = JsonSerializer.Deserialize<TResponse>(responseBody, _jsonOptions);
+                    // No data field, deserialize from the root element (already parsed)
+                    result = root.Deserialize<TResponse>(_jsonOptions);
                 }
                 
                 // Set base fields (code, msg, traceId) from root level
@@ -366,7 +367,7 @@ namespace Sunbay.Nexus.Sdk.Http
                 {
                     var result = JsonSerializer.Deserialize<TResponse>(responseBody, _jsonOptions);
                     // Check code after fallback parsing
-                    if (result != null && result.Code != ApiConstants.RESPONSE_SUCCESS_CODE)
+                    if (result != null && result.Code != ApiConstants.ResponseSuccessCode)
                     {
                         if (_logger?.IsEnabled(LogLevel.Error) == true)
                         {
@@ -385,8 +386,8 @@ namespace Sunbay.Nexus.Sdk.Http
                 {
                     _logger?.LogError(jsonEx, "Failed to parse response even with direct parsing");
                     throw new SunbayBusinessException(
-                        ApiConstants.ERROR_CODE_INVALID_RESPONSE,
-                        ApiConstants.MESSAGE_FAILED_PARSE_RESPONSE,
+                        ApiConstants.ErrorCodeInvalidResponse,
+                        ApiConstants.MessageFailedParseResponse,
                         jsonEx);
                 }
             }
@@ -400,12 +401,12 @@ namespace Sunbay.Nexus.Sdk.Http
             var sb = new StringBuilder();
             sb.Append("HTTP ").Append(statusCode);
             
-            if (statusCode >= ApiConstants.HTTP_STATUS_CLIENT_ERROR_START && 
-                statusCode < ApiConstants.HTTP_STATUS_CLIENT_ERROR_END)
+            if (statusCode >= ApiConstants.HttpStatusClientErrorStart && 
+                statusCode < ApiConstants.HttpStatusClientErrorEnd)
             {
                 sb.Append(" (Client Error)");
             }
-            else if (statusCode >= ApiConstants.HTTP_STATUS_SERVER_ERROR_START)
+            else if (statusCode >= ApiConstants.HttpStatusServerErrorStart)
             {
                 sb.Append(" (Server Error)");
             }
@@ -487,12 +488,12 @@ namespace Sunbay.Nexus.Sdk.Http
                 processedHeaders.Add(headerName);
                 
                 // Mask Authorization header
-                if (string.Equals(headerName, ApiConstants.HEADER_AUTHORIZATION, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(headerName, ApiConstants.HeaderAuthorization, StringComparison.OrdinalIgnoreCase))
                 {
                     // Format: "Authorization: Bearer ***" or "Authorization: ***"
-                    if (headerValues.StartsWith(ApiConstants.AUTHORIZATION_BEARER_PREFIX, StringComparison.OrdinalIgnoreCase))
+                    if (headerValues.StartsWith(ApiConstants.AuthorizationBearerPrefix, StringComparison.OrdinalIgnoreCase))
                     {
-                        headers.Add($"{headerName}: {ApiConstants.AUTHORIZATION_BEARER_PREFIX}***");
+                        headers.Add($"{headerName}: {ApiConstants.AuthorizationBearerPrefix}***");
                     }
                     else
                     {
